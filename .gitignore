@@ -13,7 +13,12 @@
 hs_err_pid*
 
 # NetBeans specific files/directories
-.nbattrs
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
 
 # Miscellaneous
 *.log
