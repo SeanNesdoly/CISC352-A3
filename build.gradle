@@ -9,21 +9,26 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
+defaultTasks 'clean', 'run'
+
 // declare where to find project dependencies
 repositories {
-    jcenter() // for resolving dependencies
+    jcenter() 
 }
 
 dependencies {
     // Google Guava library
     compile 'com.google.guava:guava:20.0'
-
-    // JUnit test framework
-    //testCompile 'junit:junit:4.12'
 }
 
 // Define the main class for the application
 mainClassName = 'Main'
+
+run {
+    if (project.hasProperty("mode")) {
+        args Eval.me(mode)
+    }
+}
 
 jar {
     manifest {
