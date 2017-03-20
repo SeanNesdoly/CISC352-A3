@@ -49,47 +49,24 @@ public class NQueens {
     them to positions on a grid. */
     public static int[] performInitialAssignment(int numQueens) {
         int[] solution = new int[numQueens];
-        int[][] columnArray = new int[numQueens][numQueens];
+        int[] columnArray = new int[numQueens];
         int[][] diagonalArray = new int[numQueens][numQueens];
-        //int randomColumnIndex = randomGenerator.nextInt(numQueens); 
-        int randomColumnIndex = 1;
-        solution[0] = randomColumnIndex+1; // randomly place first queen
-        columnArray[0][randomColumnIndex] = 1;
-        
-        int l = 0;
-        int m = randomColumnIndex;
-        while (l < numQueens && m >=0) {
-            diagonalArray[l][m]++;
-            l++;
-            m--;
-        }
-        l = 1;
-        m = randomColumnIndex+1;
-        while (l < numQueens && m < numQueens) {
-            diagonalArray[l][m]++;
-            l++;
-            m++;
-        }
-                
-        
-        diagonalArray[0][randomColumnIndex] = 1;
+
         int numConflicts = 0;
         int maxConflicts; // will always be below 4
         // for each row, maintain list of positions with the fewest number of conflicts seen so far
         ArrayList<Integer> positionArray = new ArrayList<>(); 
         int numPossiblePositions;
-        for (int i = 1; i < numQueens; i++) { // for each row
+        for (int i = 0; i < numQueens; i++) { // for each row
             positionArray.clear();
             maxConflicts = 4;
             for (int j = 0; j < numQueens; j++) { // for each col
               
                 numConflicts = 0;
                 // is there a queen in column j?
-                if (columnArray[i-1][j] == 1) {
-                    columnArray[i][j] = 1;
+                if (i > 0 && columnArray[j] == 1)
                     numConflicts++;      
-                }
-
+                // add in diagonal conflicts
                 numConflicts = numConflicts + diagonalArray[i][j];
                 
                 if (numConflicts < maxConflicts) {
@@ -100,15 +77,13 @@ public class NQueens {
                 else if (numConflicts == maxConflicts) 
                     positionArray.add(j);
             }
-            if (numConflicts > 0)
-                queensInConflict.add(i);
+
             numPossiblePositions = positionArray.size();
- 
             int chosenPosition = positionArray.get(randomGenerator.nextInt(numPossiblePositions));
-            columnArray[i][chosenPosition] = 1;
+            columnArray[chosenPosition] = 1;
             
-            l = i;
-            m = chosenPosition;
+            int l = i;
+            int m = chosenPosition;
             while (l < numQueens && m >=0) {
                 diagonalArray[l][m]++;
                 l++;
@@ -121,11 +96,13 @@ public class NQueens {
                 l++;
                 m++;
             }
-                 
-            solution[i] = chosenPosition + 1;
+           
+            if (numConflicts > 0)
+                queensInConflict.add(chosenPosition); // update list of queens with conflicts
+            solution[i] = chosenPosition + 1; // add queen to solution
             
         }
-        System.out.println(Arrays.deepToString(columnArray));
+        System.out.println(Arrays.toString(columnArray));
         System.out.println(Arrays.deepToString(diagonalArray));
     
         return solution;
