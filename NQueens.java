@@ -51,14 +51,25 @@ public class NQueens {
         int[] solution = new int[numQueens];
         int[][] columnArray = new int[numQueens][numQueens];
         int[][] diagonalArray = new int[numQueens][numQueens];
-        int randomColumnIndex = randomGenerator.nextInt(numQueens); 
+        //int randomColumnIndex = randomGenerator.nextInt(numQueens); 
+        int randomColumnIndex = 1;
         solution[0] = randomColumnIndex+1; // randomly place first queen
         columnArray[0][randomColumnIndex] = 1;
         
-        if (randomColumnIndex > 0)
-            diagonalArray[0][randomColumnIndex-1] = 1;
-        if (randomColumnIndex < numQueens-1)      
-            diagonalArray[0][randomColumnIndex+1] = 1;
+        int l = 0;
+        int m = randomColumnIndex;
+        while (l < numQueens && m >=0) {
+            diagonalArray[l][m]++;
+            l++;
+            m--;
+        }
+        l = 1;
+        m = randomColumnIndex+1;
+        while (l < numQueens && m < numQueens) {
+            diagonalArray[l][m]++;
+            l++;
+            m++;
+        }
                 
         
         diagonalArray[0][randomColumnIndex] = 1;
@@ -78,15 +89,7 @@ public class NQueens {
                     columnArray[i][j] = 1;
                     numConflicts++;      
                 }
-                // is there a queen on one or both of the diagonals?
-                if (j > 0 && (diagonalArray[i-1][j-1] > 0)) {
-                    if (i < numQueens-1)
-                        diagonalArray[i+1][j-1]++;
-                }
-                if (j < numQueens-1 && (diagonalArray[i-1][j+1] > 0)) {
-                    if (i < numQueens-1)
-                        diagonalArray[i+1][j+1]++;
-                }
+
                 numConflicts = numConflicts + diagonalArray[i][j];
                 
                 if (numConflicts < maxConflicts) {
@@ -100,25 +103,25 @@ public class NQueens {
             if (numConflicts > 0)
                 queensInConflict.add(i);
             numPossiblePositions = positionArray.size();
-            
-            for (Integer position : positionArray) 
-                System.out.println(position);
-            System.out.println("\n");
-            
-            
+ 
             int chosenPosition = positionArray.get(randomGenerator.nextInt(numPossiblePositions));
             columnArray[i][chosenPosition] = 1;
             
-            diagonalArray[i][chosenPosition]++;
-            if (chosenPosition > 0 && (diagonalArray[i-1][chosenPosition-1] > 0)) {
-                if (i < numQueens-1)
-                    diagonalArray[i+1][chosenPosition-1]++;
+            l = i;
+            m = chosenPosition;
+            while (l < numQueens && m >=0) {
+                diagonalArray[l][m]++;
+                l++;
+                m--;
             }
-            if (chosenPosition < numQueens-1 && (diagonalArray[i-1][chosenPosition+1] > 0)) {
-                if (i < numQueens-1)
-                    diagonalArray[i+1][chosenPosition+1]++;
+            l = i+1;
+            m = chosenPosition+1;
+            while (l < numQueens && m < numQueens) {
+                diagonalArray[l][m]++;
+                l++;
+                m++;
             }
-            
+                 
             solution[i] = chosenPosition + 1;
             
         }
