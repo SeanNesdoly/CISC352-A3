@@ -11,13 +11,62 @@ This repository implements the algorithms required for solving the following two
 ---
 
 ### Program Input/Output
-TODO: specify i/o handling
 
-### N-Queens Problem
-TODO: how to run me
+Here is the project structure:
 
-### Alpha-Beta Pruning
-TODO: how to run me
+```
+├── README.md
+├── TechnicalDocument.md
+├── build.gradle
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+└── src
+    ├── io
+    │   ├── alphabeta.txt
+    │   ├── alphabeta_out.txt
+    │   ├── nqueens.txt
+    │   └── nqueens_out.txt
+    └── java
+        ├── AlphaBeta.java
+        ├── Main.java
+        ├── NQueens.java
+        └── TextFile.java
+```
+
+The folder `src/io/` contains the specified input & output files for both the **N-Queens** problem and **AlphaBeta Pruning**. Edit the files as desired, *but do not move them to another directory*. The program is coded to read & write exact file names from `src/io/`. If *absolutely* necessary, you may change the constants contained within `TextFile.java`, but be sure to recompile.
+
+### Running the N-Queens Problem
+```bash
+cd path/to/CISC352-Assignment3
+./gradlew -Pmode=1 -q # quiet build
+```
+
+### Running Alpha-Beta Pruning
+```bash
+cd path/to/CISC352-Assignment3
+./gradlew -Pmode=2 -q # quiet build
+```
 
 ### Build Process
-TODO: finalize build process
+To build and run a problem without installing the *gradle* build tool, run the `gradlew` executable from the command line. If the *gradle* build tool is installed, you may run `gradle` instead. Here, **n=1** runs *NQueens* and **n=2** runs *AlphaBeta Pruning*:
+
+```bash
+cd path/to/CISC352-Assignment3
+./gradlew -Pmode=n -q
+gradle -Pmode=n -q # alternative to above (requires gradle build tool)
+```
+
+For Windows operating systems, there is an equivalent `gradlew.bat` batch file in the project root directory that may be executed in a similar manner.
+
+Alternatively, you may run a problem by building and running the compiled `.jar` file:
+
+```bash
+cd path/to/CISC352-Assignment3
+gradle build
+java -Xmx6g -jar build/libs/CISC352-Assignment3.jar n
+```
