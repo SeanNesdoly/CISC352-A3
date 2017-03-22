@@ -20,7 +20,7 @@ public class TestNQueens {
     
     public static int getInput() {
         // error checking for if n<3 or n>1000000000?
-        return 8;
+        return 4;
     }
     
     /* Returns the column position with the fewest number of conflicts, breaking
@@ -98,23 +98,29 @@ public class TestNQueens {
 
             numPossiblePositions = positionArray.size();
             int chosenPosition = positionArray.get(randomGenerator.nextInt(numPossiblePositions));
-            if (numConflicts > 0)
+            if (maxConflicts > 0) {
                 queensInConflict.add(chosenPosition); // update list of queens with conflicts
+            }
             instance.solution[i] = chosenPosition + 1; // add queen to solution           
             
             
             updateConflictArrays(instance,i,chosenPosition);
-       
+            System.out.println(Arrays.deepToString(instance.diagonalArray)); 
         }
         System.out.println(Arrays.toString(instance.columnArray));
-        System.out.println(Arrays.deepToString(instance.diagonalArray));
+        
 
     }
         
         
         
     public static void outputResult(NQueens instance) {
+        System.out.println("initial solution: ");
+              
         System.out.println(Arrays.toString(instance.solution));
+        System.out.println("queens in conflict: ");
+        for (int queen : queensInConflict)
+            System.out.println(queen);
     }
                
     
