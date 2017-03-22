@@ -1,7 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * A program that solves the N Queen's Problem using the minimum conflicts algorithm. 
+ * 
+ * CISC 352 Assignment 3
+ * Sean Nesdoly & Mary Hoekstra
+ * March 18th, 2017.
+ * Last Modified: March , 2017.
  */
 package nqueens;
 
@@ -17,7 +20,7 @@ public class TestNQueens {
     
     public static int getInput() {
         // error checking for if n<3 or n>1000000000?
-        return 4;
+        return 8;
     }
     
     /* Returns the column position with the fewest number of conflicts, breaking
@@ -68,9 +71,8 @@ public class TestNQueens {
     
     /* Given the number of queens to be placed, uses a greedy algorithm to assign 
     them to positions on a grid. */
-    public static int[] performInitialAssignment(NQueens instance) {
+    public static void performInitialAssignment(NQueens instance) {
         int numQueens = instance.numQueens;
-        int[] solution = new int[instance.numQueens];
         int numConflicts = 0;
         int maxConflicts;
         // for each row, maintain list of positions with the fewest number of conflicts seen so far
@@ -98,7 +100,7 @@ public class TestNQueens {
             int chosenPosition = positionArray.get(randomGenerator.nextInt(numPossiblePositions));
             if (numConflicts > 0)
                 queensInConflict.add(chosenPosition); // update list of queens with conflicts
-            solution[i] = chosenPosition + 1; // add queen to solution           
+            instance.solution[i] = chosenPosition + 1; // add queen to solution           
             
             
             updateConflictArrays(instance,i,chosenPosition);
@@ -106,30 +108,60 @@ public class TestNQueens {
         }
         System.out.println(Arrays.toString(instance.columnArray));
         System.out.println(Arrays.deepToString(instance.diagonalArray));
-    
-        return solution;
+
     }
         
         
         
-    public static void outputResult(int[] solution) {
-        System.out.println(Arrays.toString(solution));
+    public static void outputResult(NQueens instance) {
+        System.out.println(Arrays.toString(instance.solution));
     }
                
-    /*
-    public static int[] repairSolution(int[] intialAssignment) {
+    
+    /* Repairs initial queen assignment by randomly selecting a queen in conflict
+    and moving it to a column where it conflicts with the fewest other queens,
+    breaking ties randomly. */
+    public static boolean repairSolution(NQueens instance) {
+        boolean restart = false; // will return true if repair exceeds 100 moves
+        int numSteps = 0; 
+        
+        // while array of queens in conflict is non-empty 
+        int randomIndex;
+        int victimQueen;
+        int numConflictingQueens;
+        while (!queensInConflict.isEmpty() && numSteps <= 100) {
+            numSteps++;
+            numConflictingQueens = queensInConflict.size();
+            randomIndex = randomGenerator.nextInt(numConflictingQueens);
+            victimQueen = queensInConflict.get(randomIndex);
+            // do stuff
+            queensInConflict.remove(randomIndex);
+        }
+        if (numSteps == 100)
+            return true;
+        return false;
+        
+    
         
     }
-    */    
+        
     
     
     
     public static void main(String[] args) {
         int input = getInput(); // will be array list 
         // for each input in file
-        NQueens instance = new NQueens(input);
-        int[] initialQueenPlacement = performInitialAssignment(instance);
-        outputResult(initialQueenPlacement);
+        boolean restart = true;
+        while (restart) {
+            NQueens instance = new NQueens(input);
+            performInitialAssignment(instance);
+            outputResult(instance);
+            restart = repairSolution(instance);
+            
+            
+            restart = false;
+        }
+        
     }
     
 }
