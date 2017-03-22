@@ -42,11 +42,10 @@ public class TextFile {
      * @return a list of strings, where each element is a line of text from the input file
      */
     public ArrayList<String> readFile() throws FileNotFoundException {
-        ArrayList<String> lines;
+        ArrayList<String> lines = new ArrayList<>();
         
         // select the input file from the source directory
         try (Scanner sf = new Scanner(new FileReader(in))) {
-            lines = new ArrayList<>();
             while (sf.hasNext()) {
                 lines.add(sf.nextLine());
             }

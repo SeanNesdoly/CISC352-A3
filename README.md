@@ -10,6 +10,18 @@ This repository implements the algorithms required for solving the following two
 
 ---
 
+### Running the N-Queens Problem
+```bash
+cd path/to/CISC352-Assignment3
+./gradlew -Pmode=1 -q # quiet build
+```
+
+### Running Alpha-Beta Pruning
+```bash
+cd path/to/CISC352-Assignment3
+./gradlew -Pmode=2 -q # quiet build
+```
+
 ### Program Input/Output
 
 Here is the project structure:
@@ -39,18 +51,6 @@ Here is the project structure:
 ```
 
 The folder `src/io/` contains the specified input & output files for both the **N-Queens** problem and **AlphaBeta Pruning**. Edit the files as desired, *but do not move them to another directory*. The program is coded to read & write exact file names from `src/io/`. If *absolutely* necessary, you may change the constants contained within `TextFile.java`, but be sure to recompile.
-
-### Running the N-Queens Problem
-```bash
-cd path/to/CISC352-Assignment3
-./gradlew -Pmode=1 -q # quiet build
-```
-
-### Running Alpha-Beta Pruning
-```bash
-cd path/to/CISC352-Assignment3
-./gradlew -Pmode=2 -q # quiet build
-```
 
 ### Build Process
 To build and run a problem without installing the *gradle* build tool, run the `gradlew` executable from the command line. If the *gradle* build tool is installed, you may run `gradle` instead. Here, **n=1** runs *NQueens* and **n=2** runs *AlphaBeta Pruning*:
