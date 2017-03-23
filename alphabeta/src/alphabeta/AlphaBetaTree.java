@@ -12,19 +12,54 @@ import java.util.*;
 
 public class AlphaBetaTree {
 
-    public static int graphCount; // keep track of the number of graph instances run on a single execution
+    public static int graphCount = 0; // keep track of the number of graph instances run on a single execution
 
     public Vertex root; // root vertex of the tree
     public Map<String, Vertex> T; // the graph: maps a vertex name to the vertex object
 
     private int score;
-    private int leaves_touched;
+    private int leaves_touched = 0;
 
     public AlphaBetaTree(String graph) {
         T = new HashMap<>();
-
         createGraph(graph);
+
+        score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
         graphCount++; // update graph counter
+    }
+
+    private double alpha_beta(Vertex current, double alpha, double beta) {
+        if (current.isRoot) {
+            alpha = Double.NEGATIVE_INFINITY;
+            beta = Double.POSITIVE_INFINITY;
+        }
+
+        if (current.isLeaf) {
+            leaves_touched++;
+            return current.leafValue;
+        }
+
+        if (current.isMaxVertex()) {
+            for (Vertex child : current.children) {
+                alpha = Math.max(alpha, alpha_beta(child, alpha, beta));
+
+                if (alpha >= beta)
+                    return alpha;
+            }
+
+            return alpha;
+        }
+
+        // not a leaf, not a MAX vertex --> has to be a MIN vertex
+        for (Vertex child: current.children) {
+            beta = Math.min(beta, alpha_beta(child, alpha, beta));
+
+            if (beta <= alpha)
+                return beta;
+        }
+
+        return beta;
     }
 
     private void createGraph(String graph) {

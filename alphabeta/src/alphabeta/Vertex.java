@@ -18,20 +18,23 @@ public class Vertex {
     String type; // MAX or MIN vertex
     ArrayList<Vertex> children; // child vertices
     boolean isRoot = false; // denotes the root vertex
-    boolean isLeaf = false; // leaf vertices are identified by numbers!
+    boolean isLeaf = false; // leaf vertices are identified by numbers
+    double leafValue; // value of a leaf
 
     public Vertex(String _v, String _t) {
         v = _v;
 
         type = _t;
-        if (type.isEmpty()) // empty type field denotes a leaf node (neither MAX nor MIN)
+        if (type.isEmpty()) { // empty type field denotes a leaf node
             isLeaf = true;
+            leafValue = Double.parseDouble(v);
+        }
 
         if (!isLeaf)
             children = new ArrayList<>();
     }
 
-    // adds in a leaf vertex as a child of this vertex, and returns it
+    // adds in a leaf vertex as a child of this vertex; returns the created leaf
     public Vertex addLeafVertex(String _v) {
         Vertex leaf = new Vertex(_v, ""); // empty type argument creates a leaf vertex
         children.add(leaf);
@@ -39,9 +42,17 @@ public class Vertex {
         return leaf;
     }
 
+    // a leaf vertex contains a number in its name
     public static boolean isLeafVertex(String _v) {
-        // identifier contains a number
         return (_v.matches(".*\\d+.*"));
+    }
+
+    public boolean isMaxVertex() {
+        return type.equals("MAX");
+    }
+
+    public boolean isMinVertex() {
+        return type.equals("MIN");
     }
 
     // number of children

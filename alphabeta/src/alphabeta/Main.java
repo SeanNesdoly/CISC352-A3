@@ -23,7 +23,8 @@ public class Main {
             for (String line : file.getContents()) {
                 // ignore blank lines between input graphs
                 if (!line.isEmpty()) {
-                    AlphaBetaTree ab = new AlphaBetaTree(line);
+                    AlphaBetaTree abt = new AlphaBetaTree(line);
+                    System.out.println(abt);
                 }
             }
 
