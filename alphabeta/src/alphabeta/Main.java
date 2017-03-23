@@ -1,7 +1,7 @@
 package alphabeta;
 
 /*
- * The main class for running the AlphaBeta Pruning algorithm.
+ * The main driver class for running the AlphaBeta Pruning algorithm.
  *
  * CISC 352 Assignment 3
  * Sean Nesdoly & Mary Hoekstra
@@ -19,7 +19,14 @@ public class Main {
 
         try {
             TextFile file = new TextFile();
-            System.out.print(file.getContents().get(0));
+
+            for (String line : file.getContents()) {
+                // ignore blank lines between input graphs
+                if (!line.isEmpty()) {
+                    AlphaBetaTree ab = new AlphaBetaTree(line);
+                }
+            }
+
             file.writeFile("hey bud2");
         } catch (IOException ex) {
             System.err.println(ex);
