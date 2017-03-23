@@ -27,7 +27,7 @@ mainClassName = 'nqueens.Main'
 // configure jar creation for distribution
 jar {
     manifest {
-        attributes 'Main-Class': 'Main'
+        attributes 'Main-Class': 'nqueens.Main'
     }
 }
 

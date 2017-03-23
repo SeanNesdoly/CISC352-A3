@@ -26,7 +26,7 @@ public class TextFile {
     private ArrayList<String> contents;
 
     public TextFile() throws FileNotFoundException {
-            this.contents = readFile();
+        this.contents = readFile();
     }
 
     // Returns the contents of the file. Note this is not a deep copy.
