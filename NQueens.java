@@ -10,20 +10,28 @@
  */
 package nqueens;
 
+import java.util.ArrayList;
+
 
 public class NQueens {
 
     public int numQueens;
     public int[] columnArray;
     public int[][] diagonalArray;
-    public int[] solution;
- 
+    public int[][] totalConflictArray;
+    public int[][] allQueens; // an entry i,j corresponds to the number of conflicts a queen on i,j has
+    public ArrayList<ArrayList<Integer>> queensInRows; // each entry, i, contains a list of the column indices of queens in row i
     
     public NQueens(int n) {
         numQueens = n;
         columnArray = new int[numQueens];
         diagonalArray = new int[numQueens][numQueens];
-        solution = new int[numQueens];
+        totalConflictArray = new int[numQueens][numQueens];
+        allQueens = new int[numQueens][numQueens]; 
+        queensInRows = new ArrayList<>(numQueens);
+        while (queensInRows.size() < numQueens)
+            queensInRows.add(new ArrayList<>());
+        
     }
     
     
