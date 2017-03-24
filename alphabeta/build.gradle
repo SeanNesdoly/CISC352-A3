@@ -29,6 +29,8 @@ jar {
     manifest {
         attributes 'Main-Class': 'alphabeta.Main'
     }
+
+    destinationDir = file("$rootDir")
 }
 
 // set source file directory structure

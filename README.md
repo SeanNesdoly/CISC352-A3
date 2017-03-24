@@ -10,16 +10,40 @@ This repository implements the algorithms required for solving the following two
 
 ---
 
+### Build Process
+
+Compiled `JAR` files have been included under the root project directory for each problem. Note that Java version 1.8 was used.
+
+If required to build a project, there are two methods that may be used:
+- *gradle* build tool **not** installed: run the `gradlew` executable or the `graddlew.bat` batch file (for Windows)
+- *gradle* build tool **is** installed: from the project root directory, run the `gradle build` command
+
 ### Running the N-Queens Problem
+Using the compiled `JAR` file:
 ```bash
 cd path-to-CISC352-Assignment3/nqueens
-./gradlew -q # or "gradle -q" (if gradle is installed)
+java -Xmx6g -jar nqueens.jar
+```
+
+Using the `gradle` executable:
+```bash
+cd path-to-CISC352-Assignment3/nqueens
+./gradlew -q # if gradle is NOT installed
+gradle -q # if gradle is installed
 ```
 
 ### Running Alpha-Beta Pruning
+Using the compiled `JAR` file:
 ```bash
 cd path-to-CISC352-Assignment3/alphabeta
-./gradlew -q # or "gradle -q" (if gradle is installed)
+java -jar alphabeta.jar
+```
+
+Using the `gradle` executable:
+```bash
+cd path-to-CISC352-Assignment3/alphabeta
+./gradlew -q # if gradle is NOT installed
+gradle -q # if gradle is installed
 ```
 
 ### Program Input/Output
@@ -30,6 +54,7 @@ Here is the project structure:
 ├── README
 ├── TechnicalDocument.pdf
 ├── alphabeta
+│   ├── alphabeta.jar # JAR file
 │   ├── build.gradle
 │   ├── gradle
 │   │   └── wrapper
@@ -45,6 +70,7 @@ Here is the project structure:
 │       ├── alphabeta.txt       # input file
 │       └── alphabeta_out.txt   # output file
 └── nqueens
+    ├── nqueens.jar # JAR file
     ├── build.gradle
     ├── gradle
     │   └── wrapper
@@ -64,33 +90,3 @@ Here is the project structure:
 ```
 
 In each problem's root project directory, the folder `src/` contains the specified input & output files. Edit the files as desired, but do not move them to another directory. The program is coded to read & write exact file names from the directory `src/`.
-
-### Build Process
-To build and run a problem without installing the *gradle* build tool, run the `gradlew` executable from the command line. If the *gradle* build tool is installed, you may run `gradle` instead:
-
-```bash
-cd path-to-CISC352-Assignment3/nqueens
-./gradlew -q
-gradle -q # alternative to above (requires gradle build tool)
-
-cd path-to-CISC352-Assignment3/nqueens
-./gradlew -q # or: gradle -q
-```
-
-For Windows operating systems, there is an equivalent `gradlew.bat` batch file in each project root directory that may be executed in a similar manner.
-
----
-
-Alternatively, you may run a problem by building and executing the compiled `.jar` file.  
-**N-Queens:**
-```bash
-cd path-to-CISC352-Assignment3/nqueens
-gradle build
-java -Xmx6g -jar build/libs/nqueens.jar
-```
-**AlphaBeta Pruning:**
-```bash
-cd path-to-CISC352-Assignment3/alphabeta
-gradle build
-java -jar build/libs/alphabeta.jar
-```
