@@ -48,20 +48,17 @@ gradle -q # if gradle is installed
 
 ### Program Input/Output
 
-Here is the project structure:
+In each projects root directory there is a folder named `src/`. The specified input & output files are contained within this folder. Edit the files as desired, but do not move them to another directory. Both programs are coded to read from & write to the directory `src/`.
+
+Here are the important components of the project structure for reference:
 
 ```bash
 ├── README
 ├── TechnicalDocument.pdf
 ├── alphabeta
 │   ├── alphabeta.jar # JAR file
-│   ├── build.gradle
-│   ├── gradle
-│   │   └── wrapper
-│   │       ├── gradle-wrapper.jar
-│   │       └── gradle-wrapper.properties
-│   ├── gradlew
-│   ├── gradlew.bat
+│   ├── gradlew     # Unix executable
+│   ├── gradlew.bat # Windows executable
 │   └── src
 │       ├── alphabeta
 │       │   ├── AlphaBeta.java
@@ -71,14 +68,8 @@ Here is the project structure:
 │       └── alphabeta_out.txt   # output file
 └── nqueens
     ├── nqueens.jar # JAR file
-    ├── build.gradle
-    ├── gradle
-    │   └── wrapper
-    │       ├── gradle-wrapper.jar
-    │       └── gradle-wrapper.properties
-    ├── gradle.properties
-    ├── gradlew
-    ├── gradlew.bat
+    ├── gradlew     # Unix executable
+    ├── gradlew.bat # Windows executable
     └── src
         ├── java
         │   ├── Main.java
@@ -88,5 +79,3 @@ Here is the project structure:
         └── nqueens_out.txt # output file
 
 ```
-
-In each problem's root project directory, the folder `src/` contains the specified input & output files. Edit the files as desired, but do not move them to another directory. The program is coded to read & write exact file names from the directory `src/`.
