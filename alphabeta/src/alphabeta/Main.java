@@ -26,7 +26,7 @@ public class Main {
                 if (!line.isEmpty()) {
                     AlphaBetaTree abt = new AlphaBetaTree(line);
                     out += abt + "\n\n";
-                    System.out.println(abt);
+                    System.out.println(abt); // to output stream for logging
                 }
             }
 

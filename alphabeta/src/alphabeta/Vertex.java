@@ -18,7 +18,7 @@ public class Vertex {
     ArrayList<Vertex> children; // child vertices
     boolean isRoot = false; // denotes the root vertex
     boolean isLeaf = false; // leaf vertices are identified by numbers
-    double leafValue; // value of a leaf
+    double leafValue; // value of a leaf vertex
 
     public Vertex(String _v, String _t) {
         v = _v;

@@ -17,21 +17,22 @@ public class AlphaBetaTree {
     public static int graphCount = 0; // keep track of the number of graph instances run on a single execution
 
     public Vertex root; // root vertex of the tree
-    public Map<String, Vertex> T; // mapping of vertex names to vertex objects for parsing
+    public Map<String, Vertex> V; // mapping of vertex names to vertex objects for parsing
 
     private int score; // computed score of the game
     private int leaves_touched = 0; // numbers of leaves examined during the alphabeta tree traversal
 
     public AlphaBetaTree(String graph) {
-        T = new HashMap<>();
+        V = new HashMap<>(); // vertex name to Vertex object mapping
         createGraph(graph);
 
+        // alpha = -infinity, beta = +infinity for initial recursive call
         score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         graphCount++; // update graph counter for multi-graph runs
     }
 
-    // AlphaBeta pruning algorithm implementation
+    // AlphaBeta Pruning algorithm implementation
     private double alpha_beta(Vertex current, double alpha, double beta) {
         if (current.isRoot) {
             alpha = Double.NEGATIVE_INFINITY;
@@ -50,25 +51,23 @@ public class AlphaBetaTree {
                 if (alpha >= beta)
                     return alpha; // prune branch
             }
-
             return alpha;
         }
 
-        // not a leaf && not a MAX vertex: must be a MIN vertex
+        // not a leaf vertex && not a MAX vertex implies that this must be a MIN vertex
         for (Vertex child: current.children) {
             beta = Math.min(beta, alpha_beta(child, alpha, beta));
 
             if (beta <= alpha)
                 return beta; // prune branch
         }
-
         return beta;
     }
 
-    /* Creates a graph from an input string. The first set parsed is the vertex set, where each
-    vertex is defined as being of type MAX or MIN. The leaf vertices are not included in the
-    vertex set and are identified by a number. The second set parsed is the edge set. From the
-    vertex & edge sets, a tree is built. */
+    // Creates a graph from an input string. The first set parsed is the vertex set, where each
+    // vertex is defined as being of type MAX or MIN. The leaf vertices are not included in the
+    // vertex set and are identified by a number. The second set parsed is the edge set. From the
+    // vertex & edge sets, a tree is built.
     private void createGraph(String graph) {
         Scanner s = new Scanner(graph);
 
@@ -80,7 +79,7 @@ public class AlphaBetaTree {
         String rstr = scanV.next();
         String[] rtokens = rstr.split(",");
         root = new Vertex(rtokens[0], rtokens[1]);
-        T.put(rtokens[0], root);
+        V.put(rtokens[0], root);
         root.isRoot = true;
 
         // parse the rest of the vertex set
@@ -91,7 +90,7 @@ public class AlphaBetaTree {
             String type = tokens[1];
 
             Vertex v = new Vertex(name, type);
-            T.put(name, v);
+            V.put(name, v);
         }
 
         // parse edge set
@@ -106,10 +105,10 @@ public class AlphaBetaTree {
 
             // add in the edge by adding a child to the parent vertex
             if (Vertex.isLeafVertex(child)) {
-                Vertex leaf = T.get(parent).addLeafVertex(child);
-                T.put(child, leaf);
+                Vertex leaf = V.get(parent).addLeafVertex(child);
+                V.put(child, leaf);
             } else {
-                T.get(parent).children.add(T.get(child));
+                V.get(parent).children.add(V.get(child));
             }
         }
 
