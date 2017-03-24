@@ -27,7 +27,15 @@ public class TestNQueens {
     conflicts. If another queen is found, this queen is added to queensInConflict.*/
     public static void incrementAndAdd(NQueens instance, int i, int j) {
         int numQueens = instance.numQueens;
-        instance.columnArray[j]++;
+        
+        // if there are queens in the same row, add them to queensInConflict
+        // (this queen hasn't been placed yet so it won't be added)
+        ArrayList<Integer> row = instance.queensInRows.get(i);
+        for (int columnIndex : row) {
+            Queen queen = new Queen(i,columnIndex);
+            queensInConflict.add(queen);
+        }
+        
         // propogate down rows
         int l = i;
         int m = j;
@@ -167,10 +175,12 @@ public class TestNQueens {
             numPossiblePositions = positionArray.size();
             int randomIndex = randomGenerator.nextInt(numPossiblePositions);
             int chosenColumn = positionArray.get(randomIndex);
+            instance.columnArray[chosenColumn]++; // update column array
             instance.allQueens[i][chosenColumn] = 1; // add queen to initial solution  
-            instance.queensInRows.get(i).add(chosenColumn); // add column index to row
+            
             positionArray.remove(randomIndex);
             incrementAndAdd(instance,i,chosenColumn); 
+            instance.queensInRows.get(i).add(chosenColumn); // add column index to row
         }
         System.out.println(Arrays.toString(instance.columnArray));
         System.out.println(Arrays.deepToString(instance.diagonalArray));
