@@ -8,17 +8,19 @@ package alphabeta;
  * March 22nd, 2017
  */
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class AlphaBetaTree {
 
     public static int graphCount = 0; // keep track of the number of graph instances run on a single execution
 
     public Vertex root; // root vertex of the tree
-    public Map<String, Vertex> T; // the graph: maps a vertex name to the vertex object
+    public Map<String, Vertex> T; // mapping of vertex names to vertex objects for parsing
 
-    private int score;
-    private int leaves_touched = 0;
+    private int score; // computed score of the game
+    private int leaves_touched = 0; // numbers of leaves examined during the alphabeta tree traversal
 
     public AlphaBetaTree(String graph) {
         T = new HashMap<>();
@@ -26,9 +28,10 @@ public class AlphaBetaTree {
 
         score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-        graphCount++; // update graph counter
+        graphCount++; // update graph counter for multi-graph runs
     }
 
+    // AlphaBeta pruning algorithm implementation
     private double alpha_beta(Vertex current, double alpha, double beta) {
         if (current.isRoot) {
             alpha = Double.NEGATIVE_INFINITY;
@@ -45,30 +48,32 @@ public class AlphaBetaTree {
                 alpha = Math.max(alpha, alpha_beta(child, alpha, beta));
 
                 if (alpha >= beta)
-                    return alpha;
+                    return alpha; // prune branch
             }
 
             return alpha;
         }
 
-        // not a leaf, not a MAX vertex --> has to be a MIN vertex
+        // not a leaf && not a MAX vertex: must be a MIN vertex
         for (Vertex child: current.children) {
             beta = Math.min(beta, alpha_beta(child, alpha, beta));
 
             if (beta <= alpha)
-                return beta;
+                return beta; // prune branch
         }
 
         return beta;
     }
 
+    /* Creates a graph from an input string. The first set parsed is the vertex set, where each
+    vertex is defined as being of type MAX or MIN. The leaf vertices are not included in the
+    vertex set and are identified by a number. The second set parsed is the edge set. From the
+    vertex & edge sets, a tree is built. */
     private void createGraph(String graph) {
         Scanner s = new Scanner(graph);
 
         // parse vertex set
         String vertex_set = s.next();
-        System.out.println("v set: " + vertex_set);
-
         Scanner scanV = new Scanner(vertex_set.substring(2, vertex_set.length()-2)).useDelimiter("\\),\\(");
 
         // parse root vertex
@@ -87,16 +92,12 @@ public class AlphaBetaTree {
 
             Vertex v = new Vertex(name, type);
             T.put(name, v);
-
-            System.out.println(name + ":" + type);
         }
 
         // parse edge set
         String edge_set = s.next();
-        System.out.println("\ne set: " + edge_set);
-        System.out.println("\n=======Tree=======");
-
         Scanner scanE = new Scanner(edge_set.substring(2, edge_set.length()-2)).useDelimiter("\\),\\(");
+
         while (scanE.hasNext()) {
             String entry = scanE.next();
             String[] tokens = entry.split(",");
@@ -112,16 +113,13 @@ public class AlphaBetaTree {
             }
         }
 
-        for (Vertex v : T.values())
-            System.out.println(v);
-
         // clean up resources
         scanE.close();
         scanV.close();
         s.close();
     }
 
-    // convenience method to print the score & number of leaf nodes examined for a graph instance
+    // convenience method to print the score & number of leaf nodes examined by the alphabeta algorithm for a graph instance
     @Override
     public String toString() {
         return "Graph " + graphCount + ": Score: " + score + "; Leaf Nodes Examined: " + leaves_touched;

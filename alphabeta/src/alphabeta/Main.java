@@ -20,15 +20,17 @@ public class Main {
         try {
             TextFile file = new TextFile();
 
+            String out = "";
             for (String line : file.getContents()) {
                 // ignore blank lines between input graphs
                 if (!line.isEmpty()) {
                     AlphaBetaTree abt = new AlphaBetaTree(line);
+                    out += abt + "\n\n";
                     System.out.println(abt);
                 }
             }
 
-            file.writeFile("hey bud2");
+            file.writeFile(out);
         } catch (IOException ex) {
             System.err.println(ex);
         }
