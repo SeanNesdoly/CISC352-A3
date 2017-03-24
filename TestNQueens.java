@@ -15,7 +15,7 @@ import java.util.Random;
 public class TestNQueens {
     
     private static Random randomGenerator = new Random();
-    private static ArrayList<Integer> queensInConflict = new ArrayList<>();
+    private static ArrayList<Queen> queensInConflict = new ArrayList<Queen>();
     
     
     public static int getInput() {
@@ -23,38 +23,19 @@ public class TestNQueens {
         return 4;
     }
     
-    /* Returns the column position with the fewest number of conflicts, breaking
-    ties randomly.
-    public static int checkConflicts(int i, int j) {
-        int numConflicts = 0;
-        // is there a queen in column j?
-        if (columnArray[i-1][j] == 1) {
-            columnArray[i][j] = 1;
-            numConflicts++;      
-        }
-        // is there a queen on one or both of the diagonals?
-        int diagonalConflicts = 0;
-        if (j > 0 && (diagonalArray[i-1][j-1] > 0)) 
-            diagonalConflicts++;
-        if (j < numQueens-1 && (diagonalArray[i-1][j+1] > 0)) 
-            diagonalConflicts++;
-        diagonalArray[i][j] = diagonalConflicts;
-        numConflicts = numConflicts + diagonalConflicts;
-        return numConflicts;
-    }
-    
-    */
-    
-    
-    /* Given the index of the newly placed queen, updates the column conflict array
-    and diagonal conflict array. */
-    public static void updateConflictArrays(NQueens instance, int i, int j) {
+    /* Increments squares on diagonal of newly placed queen and checks for new 
+    conflicts. If another queen is found, this queen is added to queensInConflict.*/
+    public static void incrementAndAdd(NQueens instance, int i, int j) {
         int numQueens = instance.numQueens;
-        instance.columnArray[j] = 1;
-            
+        instance.columnArray[j]++;
+        // propogate down rows
         int l = i;
         int m = j;
         while (l < numQueens && m >=0) {
+            if (instance.diagonalArray[l][m] > 0 && instance.solution[l] == m) {
+                Queen queen = new Queen(l,m);
+                queensInConflict.add(queen);
+            }
             instance.diagonalArray[l][m]++;
             l++;
             m--;
@@ -62,8 +43,89 @@ public class TestNQueens {
         l = i+1;
         m = j+1;
         while (l < numQueens && m < numQueens) {
+            if (instance.diagonalArray[l][m] > 0 && instance.solution[l] == m) {
+                Queen queen = new Queen(l,m);
+                queensInConflict.add(queen);
+            }
             instance.diagonalArray[l][m]++;
             l++;
+            m++;
+        }
+        
+        // propogate up rows
+        l = i-1;
+        m = j-1;
+        while (l >=0 && m >=0) {
+            if (instance.diagonalArray[l][m] > 0 && instance.solution[l] == m) {
+                Queen queen = new Queen(l,m);
+                queensInConflict.add(queen);
+            }
+            instance.diagonalArray[l][m]++;
+            l--;
+            m--;
+        }
+        l = i-1;
+        m = j+1;
+        while (l >= 0 && m < numQueens) {
+            if (instance.diagonalArray[l][m] > 0 && instance.solution[l] == m) {
+                Queen queen = new Queen(l,m);
+                queensInConflict.add(queen);
+            }
+            instance.diagonalArray[l][m]++;
+            l--;
+            m++;
+        }
+    }
+    
+     /* Decrements squares on diagonal of newly placed queen and checks for new 
+    conflicts. If another queen is found and this queen has no other conflicts, 
+    this queen is removed from queensInConflict.*/
+    public static void decrementAndRemove(NQueens instance, int i, int j) {
+        int numQueens = instance.numQueens;
+        instance.columnArray[j]--;
+        
+        int square;
+        // propogate down rows
+        int l = i;
+        int m = j;
+        while (l < numQueens && m >=0) {
+            square = instance.diagonalArray[l][m];
+            --square;
+            if ((l == i && m == j) || square == 0 && instance.solution[l] == m)
+                queensInConflict.remove(l);
+            l++;
+            m--;
+        }
+        l = i+1;
+        m = j+1;
+        while (l < numQueens && m < numQueens) {
+            square = instance.diagonalArray[l][m];
+            --square;
+            if (square == 0 && instance.solution[l] == m)
+                queensInConflict.remove(l);
+            l++;
+            m++;
+        }
+        
+        // propogate up rows
+        l = i-1;
+        m = j-1;
+        while (l >=0 && m >=0) {
+            square = instance.diagonalArray[l][m];
+            --square;
+            if (square == 0 && instance.solution[l] == m)
+                queensInConflict.remove(l);
+            l--;
+            m--;
+        }
+        l = i-1;
+        m = j+1;
+        while (l >= 0 && m < numQueens) {
+            square = instance.diagonalArray[l][m];
+            --square;
+            if (square == 0 && instance.solution[l] == m)
+                queensInConflict.remove(l);
+            l--;
             m++;
         }
     }
@@ -73,19 +135,21 @@ public class TestNQueens {
     them to positions on a grid. */
     public static void performInitialAssignment(NQueens instance) {
         int numQueens = instance.numQueens;
-        int numConflicts = 0;
+        int numConflicts;
         int maxConflicts;
         // for each row, maintain list of positions with the fewest number of conflicts seen so far
         ArrayList<Integer> positionArray = new ArrayList<>(); 
         int numPossiblePositions;
         for (int i = 0; i < numQueens; i++) { // for each row
             positionArray.clear();
-            maxConflicts = 4; // will always be below 4
+            maxConflicts = numQueens+1; 
             for (int j = 0; j < numQueens; j++) { // for each col
                 numConflicts = 0;
-                if (instance.columnArray[j] == 1) // is there a queen in column j?
-                    numConflicts++;      
+                if (instance.columnArray[j] == 1) { // is there a queen in column j?
+                    numConflicts++;  
+                }
                 numConflicts = numConflicts + instance.diagonalArray[i][j];
+                instance.totalConflictArray[i][j] = numConflicts;
                 
                 if (numConflicts < maxConflicts) {
                     maxConflicts = numConflicts;
@@ -97,17 +161,14 @@ public class TestNQueens {
             }
 
             numPossiblePositions = positionArray.size();
-            int chosenPosition = positionArray.get(randomGenerator.nextInt(numPossiblePositions));
-            if (maxConflicts > 0) {
-                queensInConflict.add(chosenPosition); // update list of queens with conflicts
-            }
-            instance.solution[i] = chosenPosition + 1; // add queen to solution           
-            
-            
-            updateConflictArrays(instance,i,chosenPosition);
-            System.out.println(Arrays.deepToString(instance.diagonalArray)); 
+            int randomIndex = randomGenerator.nextInt(numPossiblePositions);
+            int chosenPosition = positionArray.get(randomIndex);
+            instance.solution[i] = chosenPosition; // add queen to solution           
+            positionArray.remove(randomIndex);
+            incrementAndAdd(instance,i,chosenPosition); 
         }
         System.out.println(Arrays.toString(instance.columnArray));
+        System.out.println(Arrays.deepToString(instance.diagonalArray));
         
 
     }
@@ -115,12 +176,11 @@ public class TestNQueens {
         
         
     public static void outputResult(NQueens instance) {
-        System.out.println("initial solution: ");
               
         System.out.println(Arrays.toString(instance.solution));
         System.out.println("queens in conflict: ");
-        for (int queen : queensInConflict)
-            System.out.println(queen);
+        for (Queen queen : queensInConflict) 
+            System.out.println(queen.row + ", " + queen.column);
     }
                
     
@@ -133,22 +193,21 @@ public class TestNQueens {
         
         // while array of queens in conflict is non-empty 
         int randomIndex;
-        int victimQueen;
+        Queen victimQueen;
         int numConflictingQueens;
         while (!queensInConflict.isEmpty() && numSteps <= 100) {
             numSteps++;
             numConflictingQueens = queensInConflict.size();
             randomIndex = randomGenerator.nextInt(numConflictingQueens);
             victimQueen = queensInConflict.get(randomIndex);
-            // do stuff
-            queensInConflict.remove(randomIndex);
+            
+            decrementAndRemove(instance,victimQueen.row,victimQueen.column);
+            incrementAndAdd(instance,victimQueen.row,victimQueen.column);
         }
         if (numSteps == 100)
             return true;
         return false;
-        
-    
-        
+            
     }
         
     
@@ -161,10 +220,11 @@ public class TestNQueens {
         while (restart) {
             NQueens instance = new NQueens(input);
             performInitialAssignment(instance);
+            System.out.println("initial solution: ");
             outputResult(instance);
-            restart = repairSolution(instance);
-            
-            
+            //restart = repairSolution(instance);
+            //System.out.println("final solution: ");
+            //outputResult(instance);
             restart = false;
         }
         
