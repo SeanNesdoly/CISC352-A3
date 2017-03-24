@@ -16,7 +16,7 @@ TODO: write up
 ## Alpha-Beta Pruning
 The *Alpha-Beta Pruning algorithm* is a search algorithm that seeks to decrease the number of vertices that are evaluated by the **minimax** algorithm in its search tree. This is often used in the context of two-player machine playing *zero-sum games*. The term "minimax" refers to the goal of each player: to **minimize** their opponents **maximum** possible score. This algorithm yields the same solution as the *minimax* algorithm. In addition, it has the possibility of reducing the number of vertices visited during the tree traversal. This is accomplished by *pruning* branches of the tree that cannot possibly influence the final solution.
 
-#### Data Structures
+### Data Structures
 
 A `Vertex` class was created to implement the tree data structure required for the *AlphaBeta Pruning* algorithm. This class contains the following attributes:
 ```java
@@ -35,7 +35,26 @@ public Map<String, Vertex> V; // mapping of vertex names to vertex objects for p
 ```
 This auxiliary data structure is created to keep track of the set of vertices in the tree for parsing of the set of edges. For each vertex encountered in the string representation of the edge set, a constant time look-up in the map **V** will return the previously instantiated `Vertex` object. The first vertex in an edge entry is assumed to be the parent vertex. Thus, the second vertex is added as a child of the first vertex by adding it to the **children** `ArrayList` (an attribute of the `Vertex` class). When the entire edge set has been parsed, a tree will have been constructed. A depth-first search through each vertex and their list of children, starting at the root, will effectively traverse the entire tree. This functionality is all that is required for the *AlphaBeta Pruning* algorithm.
 
-#### Algorithm Implementation
+After the graph has been constructed, each level of the tree must be sorted in lexicographical order. This is to assert that the graph created from the input is not dependent on the order in which the edge set is given in the input string. To do so, a breadth-first search is applied to the tree, where the children of a given vertex are all sorted in lexicographical order (based on their name). The only exception to this ordering is the leaves of the tree. The recursive breadth-first search algorithm is given below:
+```java
+private void sortGraph(Vertex curr) {
+    if (curr.children.get(0).isLeaf)
+        return;
+
+    Comparator<Vertex> vcomp = (Vertex a, Vertex b) -> {
+        return a.v.compareTo(b.v);
+    };
+
+    Collections.sort(curr.children, vcomp);
+
+    for (Vertex child : curr.children) {
+        sortGraph(child);
+    }
+}
+```
+It should be noted that the sort occurs after the tree has been fully constructed. This is faster than keeping the children of a vertex sorted on each insertion during the construction of the graph. Sorting after the tree is constructed has a complexity of **O(n+log(n))**; in comparison, maintaining order during tree construction has a complexity of **O(n\*log(n))**.
+
+### Algorithm Implementation
 The recursive algorithm implementation is modeled after the pseudocode given in the assignment documentation. It is given below:
 ```java
 private double alpha_beta(Vertex current, double alpha, double beta) {
@@ -74,6 +93,7 @@ It should be noted that the *alpha* and *beta* values are of type *double* to al
 public AlphaBetaTree(String graph) {
     V = new HashMap<>(); // vertex name to Vertex object mapping
     createGraph(graph);
+    sortGraph(root); // assert lexicographical order on each level of the tree
 
     // alpha = -infinity, beta = +infinity for initial recursive call
     score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

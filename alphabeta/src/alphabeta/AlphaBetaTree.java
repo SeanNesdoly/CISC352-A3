@@ -27,7 +27,7 @@ public class AlphaBetaTree {
     public AlphaBetaTree(String graph) {
         V = new HashMap<>(); // vertex name to Vertex object mapping
         createGraph(graph);
-        sortGraph(root);
+        sortGraph(root); // assert lexicographical order on each level of the tree
 
         // alpha = -infinity, beta = +infinity for initial recursive call
         score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -122,7 +122,7 @@ public class AlphaBetaTree {
     }
 
     // performs a breadth-first search on the constructed tree in order to sort each level in
-    // alphabetical order to guarantee consistent answers
+    // lexicographical order to guarantee consistent answers
     private void sortGraph(Vertex curr) {
         if (curr.children.get(0).isLeaf)
             return;
