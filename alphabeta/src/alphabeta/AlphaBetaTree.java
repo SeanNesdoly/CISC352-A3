@@ -11,6 +11,8 @@ package alphabeta;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AlphaBetaTree {
 
@@ -25,6 +27,7 @@ public class AlphaBetaTree {
     public AlphaBetaTree(String graph) {
         V = new HashMap<>(); // vertex name to Vertex object mapping
         createGraph(graph);
+        sortGraph(root);
 
         // alpha = -infinity, beta = +infinity for initial recursive call
         score = (int) alpha_beta(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -116,6 +119,23 @@ public class AlphaBetaTree {
         scanE.close();
         scanV.close();
         s.close();
+    }
+
+    // performs a breadth-first search on the constructed tree in order to sort each level in
+    // alphabetical order to guarantee consistent answers
+    private void sortGraph(Vertex curr) {
+        if (curr.children.get(0).isLeaf)
+            return;
+
+        Comparator<Vertex> vcomp = (Vertex a, Vertex b) -> {
+            return a.v.compareTo(b.v);
+        };
+
+        Collections.sort(curr.children, vcomp);
+
+        for (Vertex child : curr.children) {
+            sortGraph(child);
+        }
     }
 
     // convenience method to print the score & number of leaf nodes examined by the alphabeta algorithm for a graph instance
