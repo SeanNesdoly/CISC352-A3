@@ -10,6 +10,7 @@ package nqueens;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Main {
 
@@ -19,16 +20,47 @@ public class Main {
 
         try {
             TextFile file = new TextFile();
-            System.out.print(file.getContents().get(0));
-            file.writeFile("hey bud1");
-        } catch (IOException ex) {
+
+            String solution = "";
+            for (String line : file.getContents()) {
+                if (line.isEmpty())
+                    continue;
+
+                int n = Integer.parseInt(line);
+                NQueens nq = new NQueens(n);
+
+                nq.createInitialBoard();
+                int iterations = 0;
+                boolean foundSolution = nq.isSolution();
+                while (!foundSolution) {
+                    if (iterations > NQueens.THRESHOLD) {
+                        nq.createInitialBoard();
+                        iterations = 0;
+                        continue;
+                    }
+
+                    nq.repair();
+                    foundSolution = nq.isSolution();
+
+                    iterations++;
+                }
+
+                if (nq.n < 256)
+                    solution += nq.printBoard();
+
+                solution += nq;
+            }
+
+            System.out.println(solution);
+            file.writeFile(solution);
+        } catch (Exception ex) {
             System.err.println(ex);
         }
 
         // check max heap value allocated by jvm
         Runtime runtime = Runtime.getRuntime();
         int mb = 1024*1024;
-        System.out.println("\n\nMax Memory:" + runtime.maxMemory() / mb);
+        //System.out.println("\n\nMax Memory:" + runtime.maxMemory() / mb);
     }
 
 }
