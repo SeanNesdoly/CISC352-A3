@@ -22,12 +22,12 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'nqueens.Main'
+mainClassName = 'nqueens.TestNQueens'
 
 // configure jar creation for distribution
 jar {
     manifest {
-        attributes 'Main-Class': 'nqueens.Main'
+        attributes 'Main-Class': 'nqueens.TestNQueens'
     }
 
     destinationDir = file("$rootDir")
