@@ -40,7 +40,6 @@ public class TestNQueens {
         int m = j;
         while (l < numQueens && m >=0) {
             if (instance.allQueens[l][m] > 0) {
-                System.out.println("adds queen here");
                 Queen queen = new Queen(l,m);
                 if (!instance.queensInConflict.contains(queen)) {
                     instance.queensInConflict.add(queen);
@@ -247,9 +246,8 @@ public class TestNQueens {
             victimQueen = instance.queensInConflict.get(randomIndex);
             chosenColumn = victimQueen.column;
 
-            // want to remove col index from row in queensInRows (not queen at index column???)
-            boolean status = instance.queensInRows.get(victimQueen.row).remove((Integer)chosenColumn);
-            System.out.println("status: " + status);
+            // want to remove col index from row in queensInRows
+            instance.queensInRows.get(victimQueen.row).remove((Integer)chosenColumn);
             decrementAndRemove(instance,victimQueen.row,chosenColumn);
             instance.allQueens[victimQueen.row][chosenColumn] = 0; // no queen now
 
@@ -304,8 +302,9 @@ public class TestNQueens {
             System.out.println("\n");
 
         }
-        //if (numSteps == 101) {
-            //restart = true;
+        if (numSteps == 101) {
+            restart = true;
+        }
         return restart;
 
     }
@@ -316,6 +315,8 @@ public class TestNQueens {
 
             ArrayList<String> solutions = new ArrayList<>();
             for (String line : file.getContents()) {
+                if (line.isEmpty())
+                    continue;
                 int input = Integer.parseInt(line);
                 NQueens instance = new NQueens(input);
 

@@ -9,9 +9,25 @@
 - Mary Hoekstra wrote the solution to the N-Queens problem
 - Sean Nesdoly wrote an implementation of the AlphaBeta pruning algorithm
 
-
 ## N-Queens Problem
-TODO: write up
+In this program, the min-conflicts iterative repair method is used to solve the NQueens Problem.
+
+First, the number of queens is read in from the input file and an NQueens object is created. Each NQueens object has a variety of data structures as attributes. These data structures are intended to keep track of the number of conflicts and minimize the number of O(n) procedures.
+
+*numQueens* is the grid size.
+*columnArray* keeps track of the number of queens in a column. It is used in the pre-processing phase to ensure that no two queens are placed on the same column.
+*diagonalArray* is a two-dimensional array used to keep track of diagonal conflicts. Whenever a queen is added to a square, the conflict is propagated through all the diagonals.
+*allQueens* is a two-dimensional array used to keep track of the position of queens and how many other queens they are in conflict with. An entry i,j in the array corresponds to how many total conflicts a queen on square i,j has.
+*queensInRows* is an ArrayList of ArrayLists. There are numQueens lists in the ArrayList, each corresponding to a row. Each list, i, contains the column indices of the queens in a row i. This is used in the repair method when a queen may be moved to row containing other queens. This avoids needing to iterate through an entire row to find all the queens in that row.
+*queensInConflict* is an ArrayList to keep track of all the queens in conflict at any given time. It holds Queen objects, which contain attributes for the row and column indices.
+
+Once the NQueens object is initialized, a greedy heuristic is used to place the queens on the board. The method *performInitialAssignment* iterates through every row, placing a queen in the position with the minimum number of conflicts. It keeps track of the best positions seen so far in *positionArray*. If there are multiple positions with the fewest number of conflicts (the size of *positionArray* is greater than 1), a position is randomly chosen from the array and the queen is placed there.
+Every time a queen is placed, the column position in *columnArray* is incremented and *incrementAndAdd* is called. *incrementAndAdd* updates the *diagonalArray* by incrementing the position of the newly placed queen and propagating this increment across all diagonals. If one of the diagonal positions being incremented contains a queen, this queen is added to the *queensInConflict* array.
+
+After an initial solution is found, *repairInitialSolution* is called. This method randomly chooses a queen from the *queensInConflict* array and moves it along the column to the position with the fewest conflicts. First, *decrementAndRemove* is called to remove the queen from its current position in the *allQueens* and*queensInRows* arrays and update the *diagonalArray* accordingly. Then, in a manner similar to *incrementAndAdd*, the entry in *diagonalArray* is decremented and the decrement is propagated across all the diagonals. If a queen that was in conflict before is now no longer in conflict, it is removed from *queensInConflict*. Using the same strategy as in *performInitialAssignment*, each row of the column is then iterated through, keeping track of the best positions seen so far in *positionArray*. If there are multiple positions with the fewest conflicts, a position is chosen randomly. Next, *incrementAndAdd* is called with the new queen position to update the *diagonalArray* and add new queens to *queensInConflict* if necessary.
+
+If there are still queens in conflict (*queensInConflict* is non-empty), the repair method is called again. If the number of repair steps exceeds 100, a new initial assignment is made and the process is started over again.
+
 
 ## Alpha-Beta Pruning
 The *Alpha-Beta Pruning algorithm* is a search algorithm that seeks to decrease the number of vertices that are evaluated by the **minimax** algorithm in its search tree. This is often used in the context of two-player machine playing *zero-sum games*. The term "minimax" refers to the goal of each player: to **minimize** their opponents **maximum** possible score. This algorithm yields the same solution as the *minimax* algorithm. In addition, it has the possibility of reducing the number of vertices visited during the tree traversal. This is accomplished by *pruning* branches of the tree that cannot possibly influence the final solution.
