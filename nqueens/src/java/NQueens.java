@@ -1,8 +1,14 @@
 package nqueens;
 /*
- * An NQueens object containing the number of queens to be placed, an array of
- * column conflicts, an array of diagonal conflicts, and an array to hold the
- * solution.
+ * This class creates an instance of the NQueens problem given a chess board size as input.
+ * Three arrays are updated throughout the placement of queens on the board in order to count
+ * the number of conflicts for a given square in O(1) time. When each queen on the board has 0
+ * conflicts, a solution is found.
+ *
+ * The THRESHOLD constant defines the number of repairs performed on a given chess board before
+ * all queens are removed and added back in (via a greedy algorithm). This is to prevent the
+ * algorithm from getting stuck. Different values of n may require different THRESHOLD levels and
+ * should be adjusted as necessary.
  *
  * CISC 352 Assignment 3
  * Sean Nesdoly & Mary Hoekstra
@@ -33,6 +39,8 @@ public class NQueens {
         numQueensInD2 = new int[2*n-1];;
     }
 
+    // create an initial board configuration by placing queens one column at a time by using the
+    // minimum-conflicts heuristic (a greedy approach)
     public void createInitialBoard() {
         for (int col = 0; col < n; col++) {
             int row = computeMinConflictRow(col);
@@ -43,6 +51,8 @@ public class NQueens {
         }
     }
 
+    // perform a repair on the board by randomly selecting a queen that is in conflict & moving
+    // it to a new row within its column. A minimum-conflicts heuristic is used to compute the new row
     public void repair() {
         int col = rand.nextInt(n);
         int row = queens[col];
@@ -66,6 +76,7 @@ public class NQueens {
         addQueenConstraint(newRow, col); // add in new queen constraints
     }
 
+    // a solution has been found if every queen on the board has 0 conflicts
     public boolean isSolution() {
         int row;
         for (int col = 0; col < n; col++) {
@@ -77,12 +88,14 @@ public class NQueens {
         return true;
     }
 
+    // add a queen by incrementing the required arrays that keep track of conflicts
     public void addQueenConstraint(int row, int col) {
         numQueensInRow[row]++;
         numQueensInD1[row+col]++;
         numQueensInD2[n-col-1+row]++;
     }
 
+    // remove a queen by decrementing the required arrays that keep track of conflicts
     public void removeQueenConstraint(int row, int col) {
         numQueensInRow[row]--;
         numQueensInD1[row+col]--;
@@ -110,7 +123,7 @@ public class NQueens {
         return minRows.get(rand.nextInt(minRows.size()));
     }
 
-    // restriction: cannot return the current row
+    // restriction: cannot return the current row!
     public int computeMinConflictRow(int row, int col) {
         // compute minimum value in column
         int minVal = Integer.MAX_VALUE;
@@ -132,6 +145,7 @@ public class NQueens {
         return minRows.get(rand.nextInt(minRows.size()));
     }
 
+    // computes the number of conflicts at the given row & column
     public int countConflicts(int row, int col) {
         return (numQueensInRow[row]-1) + (numQueensInD1[row+col]-1) + (numQueensInD2[n-col-1+row]-1);
     }
@@ -139,7 +153,7 @@ public class NQueens {
     // returns an array where the i'th element is the row index of a queen at column i (0-indexed)
     @Override
     public String toString() {
-        return Arrays.toString(queens);
+        return Arrays.toString(queens).replaceAll("\\s+","");
     }
 
     // returns an array where the i'th element is the column index of a queen at row i (1-indexed).
@@ -147,12 +161,13 @@ public class NQueens {
     public String printColIndices() {
         int[] swapped = new int[n];
         for (int i = 0; i < n; i++) {
-            //swapped[i] =
+            swapped[queens[i]] = i+1;
         }
 
-        return Arrays.toString(queens);
+        return Arrays.toString(swapped).replaceAll("\\s+","");
     }
 
+    // convience method to print the current state of the chess board
     public String printBoard() {
         ArrayList<String> rows = new ArrayList<>();
         for (int i = 0; i < n; i++)

@@ -1,7 +1,10 @@
 package nqueens;
 
 /*
- * The main class for running the N-Queens problem.
+ * The main driver class for running the N-Queens problem.
+ * Chess board sizes are read from the input file line-by-line. Each one is run as an
+ * instance of the NQueens problem with solution arrays being written to both the
+ * "nqueens_out.txt" file & the standard output stream.
  *
  * CISC 352 Assignment 3
  * Sean Nesdoly & Mary Hoekstra
@@ -48,7 +51,7 @@ public class Main {
                 if (nq.n < 256)
                     solution += nq.printBoard();
 
-                solution += nq;
+                solution += nq.printColIndices() + "\n\n";
             }
 
             System.out.println(solution);
@@ -57,10 +60,11 @@ public class Main {
             System.err.println(ex);
         }
 
-        // check max heap value allocated by jvm
+        /*// Uncomment below code to check max heap value allocated by jvm
         Runtime runtime = Runtime.getRuntime();
         int mb = 1024*1024;
-        //System.out.println("\n\nMax Memory:" + runtime.maxMemory() / mb);
+        System.out.println("\n\nMax Memory:" + runtime.maxMemory() / mb);
+        */
     }
 
 }
