@@ -28,19 +28,23 @@ public class TestNQueens {
         int numQueens = instance.numQueens;
         
         // if there are queens in the same row, add them to queensInConflict
+        // also make sure that each queen's value in allQueens is updated
         // (this queen hasn't been placed yet so it won't be added)
         ArrayList<Integer> row = instance.queensInRows.get(i);
         for (int columnIndex : row) {
             Queen queen = new Queen(i,columnIndex);
-            if (!instance.queensInConflict.contains(queen))
+            if (!instance.queensInConflict.contains(queen)) {
                 instance.queensInConflict.add(queen);
+                instance.allQueens[i][columnIndex]++;
+            }    
         }
-        
+     
         // propogate conflict down rows
         int l = i;
         int m = j;
         while (l < numQueens && m >=0) {
             if (instance.allQueens[l][m] > 0) {
+                System.out.println("adds queen here");
                 Queen queen = new Queen(l,m);
                 if (!instance.queensInConflict.contains(queen)) {
                     instance.queensInConflict.add(queen);
@@ -251,6 +255,7 @@ public class TestNQueens {
             boolean status = instance.queensInRows.get(victimQueen.row).remove((Integer)chosenColumn);
             System.out.println("status: " + status);
             decrementAndRemove(instance,victimQueen.row,chosenColumn);
+            instance.allQueens[victimQueen.row][chosenColumn] = 0; // no queen now
             
             int numConflicts;
             int numQueens = instance.numQueens;
@@ -280,8 +285,9 @@ public class TestNQueens {
             System.out.println("moving queen at (" + victimQueen.row + "," + chosenColumn + ") to (" + chosenRow + "," + chosenColumn + ")");
             
             // update arrays with position of new queen
-            instance.allQueens[chosenRow][chosenColumn]++; // increment position in allQueens array              
+                         
             incrementAndAdd(instance,chosenRow,chosenColumn);
+            instance.allQueens[chosenRow][chosenColumn]++; // increment position in allQueens array 
             instance.queensInRows.get(chosenRow).add(chosenColumn); // add column index to row
             
             System.out.println("after repair: ");
