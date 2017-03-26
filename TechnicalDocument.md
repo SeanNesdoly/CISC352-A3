@@ -10,24 +10,122 @@
 - Sean Nesdoly wrote an implementation of the AlphaBeta pruning algorithm
 
 ## N-Queens Problem
-In this program, the min-conflicts iterative repair method is used to solve the NQueens Problem.
+In this program, the min-conflicts iterative repair method is used to solve the NQueens problem.
 
-First, the number of queens is read in from the input file and an NQueens object is created. Each NQueens object has a variety of data structures as attributes. These data structures are intended to keep track of the number of conflicts and minimize the number of O(n) procedures.
+First, the number of queens to be placed on the board is read in from the input file and an `NQueens` object is created. Each `NQueens` object contains **four** arrays; when combined, these data structures are intended to keep track of the current placement of queens and the number of conflicts in order to minimize the number of O(n) operations that occur. The attributes of the `NQueens` class are as follows:
+```java
+public int n; // number of queens on the chess board
+public int[] queens; // entry i gives a Queen at [row=queens[i],col=i]
+public int[] numQueensInRow; // keep track of the number of queens in a given row
+public int[] numQueensInD1; // keep track of the # of queens on each north-east diagonal
+public int[] numQueensInD2; // keep track of the # of queens on each north-west diagonal
 
-*numQueens* is the grid size.
-*columnArray* keeps track of the number of queens in a column. It is used in the pre-processing phase to ensure that no two queens are placed on the same column.
-*diagonalArray* is a two-dimensional array used to keep track of diagonal conflicts. Whenever a queen is added to a square, the conflict is propagated through all the diagonals.
-*allQueens* is a two-dimensional array used to keep track of the position of queens and how many other queens they are in conflict with. An entry i,j in the array corresponds to how many total conflicts a queen on square i,j has.
-*queensInRows* is an ArrayList of ArrayLists. There are numQueens lists in the ArrayList, each corresponding to a row. Each list, i, contains the column indices of the queens in a row i. This is used in the repair method when a queen may be moved to row containing other queens. This avoids needing to iterate through an entire row to find all the queens in that row.
-*queensInConflict* is an ArrayList to keep track of all the queens in conflict at any given time. It holds Queen objects, which contain attributes for the row and column indices.
+public static final int THRESHOLD = 100; // number of iterations before we create a new board
+```
 
-Once the NQueens object is initialized, a greedy heuristic is used to place the queens on the board. The method *performInitialAssignment* iterates through every row, placing a queen in the position with the minimum number of conflicts. It keeps track of the best positions seen so far in *positionArray*. If there are multiple positions with the fewest number of conflicts (the size of *positionArray* is greater than 1), a position is randomly chosen from the array and the queen is placed there.
-Every time a queen is placed, the column position in *columnArray* is incremented and *incrementAndAdd* is called. *incrementAndAdd* updates the *diagonalArray* by incrementing the position of the newly placed queen and propagating this increment across all diagonals. If one of the diagonal positions being incremented contains a queen, this queen is added to the *queensInConflict* array.
+Once the `NQueens` object is initialized, a **greedy heuristic** is used to place the queens on the board; this attempts to create an initial configuration with the minimum number of moves required to produce a solution. The **createInitialBoard()** method iterates through every column, placing a queen on a row with the minimum number of conflicts. If there are multiple positions with the fewest number of conflicts, the position is randomly chosen from that set. The greedy algorithm is given below:
+```java
+// create an initial board configuration by placing queens one column at a time while using the
+// minimum-conflicts heuristic to select a row (a greedy approach)
+public void createInitialBoard() {
+    for (int col = 0; col < n; col++) {
+        int row = computeMinConflictRow(col);
+        queens[col] = row;
+        addQueenConstraint(row, col);
+    }
+}
+```
 
-After an initial solution is found, *repairInitialSolution* is called. This method randomly chooses a queen from the *queensInConflict* array and moves it along the column to the position with the fewest conflicts. First, *decrementAndRemove* is called to remove the queen from its current position in the *allQueens* and*queensInRows* arrays and update the *diagonalArray* accordingly. Then, in a manner similar to *incrementAndAdd*, the entry in *diagonalArray* is decremented and the decrement is propagated across all the diagonals. If a queen that was in conflict before is now no longer in conflict, it is removed from *queensInConflict*. Using the same strategy as in *performInitialAssignment*, each row of the column is then iterated through, keeping track of the best positions seen so far in *positionArray*. If there are multiple positions with the fewest conflicts, a position is chosen randomly. Next, *incrementAndAdd* is called with the new queen position to update the *diagonalArray* and add new queens to *queensInConflict* if necessary.
+After an initial board configuration is constructed using a greedy approach, the queens are iteratively moved to new positions in a **repair()** method until a solution is found. The number of times that an instance of a board is repaired is capped by the **THRESHOLD** variable in the `NQueens` class. If a particular board is repaired more than this value, then a new initial configuration is constructed using the **createInitialBoard()** method. This approach attempts to reduce the continued repair of a worst-case board configuration (i.e. all queens initially on the same row).
 
-If there are still queens in conflict (*queensInConflict* is non-empty), the repair method is called again. If the number of repair steps exceeds 100, a new initial assignment is made and the process is started over again.
+To **repair** the board, a queen must be picked that is currently in conflict with one or more queens. To do this, queens are selected at random until one is found that is in conflict. The queen picked is then moved to another row within its column. This row is selected using the minimum-conflicts heuristic. Similar to the greedy assignment of queens during the initial board construction, if there are multiple positions with the  fewest number of conflicts, one is randomly selected. The **repair()** method is given below:
+```java
+// perform a repair on the board by randomly selecting a queen that is in conflict & moving
+// it to a new row within its column. A minimum-conflicts heuristic is used to compute the new row
+public void repair() {
+    int col = rand.nextInt(n);
+    int row = queens[col];
 
+    // find a queen that is in conflict
+    boolean foundQueenInConflict = countConflicts(row, col) > 0;
+    while (!foundQueenInConflict) {
+        col = rand.nextInt(n);
+        row = queens[col];
+
+        foundQueenInConflict = countConflicts(row, col) > 0;
+    }
+
+    // move the queen that is in conflict
+    removeQueenConstraint(row, col); // remove old queen constraints
+
+    // select a new row using the min-conflicts heuristic
+    int newRow = computeMinConflictRow(row, col);
+    queens[col] = newRow;
+
+    addQueenConstraint(newRow, col); // add in new queen constraints
+}
+```
+
+In the above code there are two method calls that update the required arrays to reflect an addition or removal of a queen from the board. Either operation must ensure that subsequent computations on the number of conflicts for a given queen is up-to-date. To actually store the number of conflicts, we keep track of the number of queens in each **row**, the number of queens in each **left diagonal**, and the number of queens in each **right diagonal**. Doing so allows for a constant time **O(1)** calculation of the number of conflicting queens at a given row and column in the chess board. The code for each of the operations described above is given in the following methods:
+```java
+// add a queen by incrementing the required arrays that keep track of conflicts
+public void addQueenConstraint(int row, int col) {
+    numQueensInRow[row]++;
+    numQueensInD1[row+col]++;
+    numQueensInD2[n-col-1+row]++;
+}
+
+// remove a queen by decrementing the required arrays that keep track of conflicts
+public void removeQueenConstraint(int row, int col) {
+    numQueensInRow[row]--;
+    numQueensInD1[row+col]--;
+    numQueensInD2[n-col-1+row]--;
+}
+
+// computes the number of conflicts at the given row & column
+public int countConflicts(int row, int col) {
+    return (numQueensInRow[row]-1) + (numQueensInD1[row+col]-1) + (numQueensInD2[n-col-1+row]-1);
+}
+```
+
+The **computeMinConflictRow(int row, int col)** method computes the row within a column that has the fewest number of conflicts. The method cannot return the current row, as that would result in the queen not moving positions! An almost-identical method exists without this row restriction, which allows for any row within a specified column to be selected. The greedy placement of queens to build the initial board configuration uses this method. The *min-conflicts heuristic* is implemented as follows:
+```java
+public int computeMinConflictRow(int row, int col) {
+    // compute minimum value in column
+    int minVal = Integer.MAX_VALUE;
+    int currVal;
+    for (int i = 0; i < n; i++) {
+        currVal = countConflicts(i, col);
+        if (i != row && currVal < minVal)
+            minVal = currVal;
+    }
+
+    // collect all rows with the minimum value
+    ArrayList<Integer> minRows = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+        if (i != row && countConflicts(i, col) == minVal)
+            minRows.add(i);
+    }
+
+    // randomly select a row with the minimum value
+    return minRows.get(rand.nextInt(minRows.size()));
+}
+```
+
+After a **repair** is applied to a board, it is checked to see if it is a solution. A board configuration is a solution if all queens have **zero** conflicts. As the number of conflicts for a given queen can be computed in **O(1)** time, the total complexity for computing whether or not a board configuration is a solution can be computed in **O(n)** time. Determining whether a board configuration is a solution is given in the following two methods:
+```java
+// a solution has been found if every queen on the board has 0 conflicts
+public boolean isSolution() {
+    int row;
+    for (int col = 0; col < n; col++) {
+        row = queens[col];
+        if (countConflicts(row, col) > 0)
+            return false;
+    }
+
+    return true;
+}
+```
 
 ## Alpha-Beta Pruning
 The *Alpha-Beta Pruning algorithm* is a search algorithm that seeks to decrease the number of vertices that are evaluated by the **minimax** algorithm in its search tree. This is often used in the context of two-player machine playing *zero-sum games*. The term "minimax" refers to the goal of each player: to **minimize** their opponents **maximum** possible score. This algorithm yields the same solution as the *minimax* algorithm. In addition, it has the possibility of reducing the number of vertices visited during the tree traversal. This is accomplished by *pruning* branches of the tree that cannot possibly influence the final solution.

@@ -24,8 +24,8 @@ Using the compiled JAR file:
 
 Using the `gradle` executable:
     cd path-to-CISC352-Assignment3/nqueens
-    ./gradlew -q # if gradle is NOT installed
-    gradle -q # if gradle is installed
+    ./gradlew # if gradle is NOT installed
+    gradle # if gradle is installed
 
 ==================================
 Running Alpha-Beta Pruning

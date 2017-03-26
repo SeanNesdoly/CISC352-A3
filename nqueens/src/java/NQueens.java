@@ -22,11 +22,11 @@ import java.util.Arrays;
 
 public class NQueens {
 
-    public int n;
+    public int n; // number of queens on the chess board
     public int[] queens; // entry i gives a Queen at [row=queens[i],col=i]
-    public int[] numQueensInRow;
-    public int[] numQueensInD1;
-    public int[] numQueensInD2;
+    public int[] numQueensInRow; // keep track of the number of queens in a given row
+    public int[] numQueensInD1; // keep track of the number of queens on each diagonal (top right to bottom left)
+    public int[] numQueensInD2; // keep track of the number of queens on each diagonal (top left to bottom right)
 
     public static final int THRESHOLD = 100; // number of iterations before we create a new board
     private static Random rand = new Random();
@@ -39,15 +39,13 @@ public class NQueens {
         numQueensInD2 = new int[2*n-1];;
     }
 
-    // create an initial board configuration by placing queens one column at a time by using the
-    // minimum-conflicts heuristic (a greedy approach)
+    // create an initial board configuration by placing queens one column at a time while using the
+    // minimum-conflicts heuristic to select a row (a greedy approach)
     public void createInitialBoard() {
         for (int col = 0; col < n; col++) {
             int row = computeMinConflictRow(col);
             queens[col] = row;
-            numQueensInRow[row]++;
-            numQueensInD1[row+col]++;
-            numQueensInD2[n-col-1+row]++;
+            addQueenConstraint(row, col);
         }
     }
 
