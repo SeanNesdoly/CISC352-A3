@@ -1,12 +1,11 @@
 # Assignment 3 Technical Document
 
 >CISC 352: Artificial Intelligence  
->Sean Nesdoly 13sn50 10135490  
->Mary Hoekstra 13meh9 10129863  
+>Sean Nesdoly & Mary Hoekstra  
 >March 19th, 2017  
 
 #### Codebase Contributions
-- Mary Hoekstra wrote the solution to the N-Queens problem
+- Mary Hoekstra & Sean Nesdoly both wrote a solution to the N-Queens problem
 - Sean Nesdoly wrote an implementation of the AlphaBeta pruning algorithm
 
 ## N-Queens Problem
